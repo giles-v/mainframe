@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Nexus Mainframe</title>
+        <link href="/style.css" rel="stylesheet" type="text/css">
+        {{#if showTests}}
+            <link rel="stylesheet" href="/vendor/mocha.css">
+            <link rel="stylesheet" href="test.css">
+            <script src="/vendor/jquery-2.1.4.min.js"></script>
+        {{/if}}
+    </head>
+    <body>
+        {{{body}}}
+        <script src="/vendor/tock.min.js"></script>
+        <script src="/app.js"></script>
+        {{#if showTests}}
+            <div id="mocha"></div>
+            <script src="/vendor/mocha.js"></script>
+            <script src="/vendor/chai.js"></script>
+            <script>
+                mocha.ui('tdd');
+                var assert = chai.assert;
+            </script>
+            <script src="/qa/tests-global.js"></script>
+            {{#if pageTestScript}}
+                <script src="{{pageTestScript}}"></script> 
+            {{/if}}
+            <script>mocha.run();</script>
+        {{/if}}
+    </body>
+</html>

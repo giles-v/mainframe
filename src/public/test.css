@@ -1,0 +1,13 @@
+#mocha {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+#mocha-stats {
+    background: white;
+}
+#mocha-report {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
