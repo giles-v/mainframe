@@ -50,8 +50,37 @@ p {
   white-space: pre-wrap;
   margin: 1em 0 0;
 }
-p:first-child {
+main > p:first-child {
   margin-top: 0;
+}
+#out p {
+  margin: 0;
+}
+#out p:last-child:after {
+  content: '';
+  width: 0.6em;
+  height: 1em;
+  background: green;
+  display: inline-block;
+  vertical-align: top;
+  animation: blink 0.5s infinite;
+}
+
+div.input {
+  display: inline-block;
+  width: auto;
+}
+form#cmd {
+  opacity: 0;
+  position: absolute;
+  top: -100%;
+}
+
+@keyframes blink {
+  0%   { opacity: 0; }
+  49%  { opacity: 0; }
+  50%  { opacity: 1; }
+  100% { opacity: 1; }
 }
 
 @keyframes flicker {

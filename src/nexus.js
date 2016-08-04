@@ -27,12 +27,6 @@ var Nexus = (function () {
         key: 'setupRoutes',
         value: function setupRoutes() {
             this.app.get('/', this.handleIndex.bind(this));
-            this.app.get('/tours/hood-river', function (req, res) {
-                res.render('tours/hood-river');
-            });
-            this.app.get('/tours/request-group-rate', function (req, res) {
-                res.render('tours/request-group-rate');
-            });
         }
     }, {
         key: 'setupTemplates',
@@ -46,19 +40,6 @@ var Nexus = (function () {
         value: function handleIndex(req, res) {
             this.greetings = require('./lib/greetings.js');
             res.render('home', { greeting: this.greetings.greeting() });
-        }
-    }, {
-        key: 'getFoo',
-        value: function getFoo(req, res) {
-            res.type('text/plain');
-            res.send('Bar');
-        }
-    }, {
-        key: 'setFoo',
-        value: function setFoo(req, res) {
-            res.type('text/plain');
-            res.status(404);
-            res.send('Not implemented yet');
         }
     }, {
         key: 'appListening',

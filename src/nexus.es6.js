@@ -18,12 +18,6 @@ class Nexus {
 
     setupRoutes() {
         this.app.get('/', this.handleIndex.bind(this));
-        this.app.get('/tours/hood-river', function(req, res){
-            res.render('tours/hood-river'); 
-        });
-        this.app.get('/tours/request-group-rate', function(req, res){
-            res.render('tours/request-group-rate');
-        });
     }
 
     setupTemplates() {
@@ -36,17 +30,6 @@ class Nexus {
     handleIndex(req, res) {
         this.greetings = require('./lib/greetings.js');
         res.render('home', { greeting: this.greetings.greeting() });
-    }
-
-    getFoo(req, res) {
-        res.type('text/plain');
-        res.send('Bar');
-    }
-
-    setFoo(req, res) {
-        res.type('text/plain');
-        res.status(404)
-        res.send('Not implemented yet');
     }
 
     appListening() {
