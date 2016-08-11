@@ -39,9 +39,14 @@ body {
   background-size: 100% 2px, 3px 100%;
 }
 
+body.ready #page {
+  height: auto;
+  overflow: auto;
+}
+
 main {
-  height: 100%;
-  animation: turn-on 2s linear;
+  min-height: calc(100% - 2em);
+  animation: turn-on 3s linear;
   animation-fill-mode: forwards;
   padding: 1em;
 }
@@ -53,8 +58,14 @@ p {
 main > p:first-child {
   margin-top: 0;
 }
+#out {
+  margin-top: 1em;
+}
 #out p {
-  margin: 0;
+  margin: .5em 0 0;
+}
+#out p.system {
+  opacity: .7;
 }
 #out p:last-child:after {
   content: '';
@@ -73,7 +84,8 @@ div.input {
 form#cmd {
   opacity: 0;
   position: absolute;
-  top: -100%;
+  bottom: 0;
+  left: 0;
 }
 
 @keyframes blink {

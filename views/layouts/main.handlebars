@@ -11,8 +11,7 @@
     </head>
     <body>
         {{{body}}}
-        <script src="/vendor/tock.min.js"></script>
-        <script src="/app.js"></script>
+        <script data-main="app" src="require.js"></script>
         {{#if showTests}}
             <div id="mocha"></div>
             <script src="/vendor/mocha.js"></script>
