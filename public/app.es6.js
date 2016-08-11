@@ -76,6 +76,7 @@ require(['vendor/telegraph', 'vendor/tock'], function(telegraph, Tock) {
         }
 
         sysWrite(s) {
+            s = s.split("\n").join('<br>   ');
             this.updateLine('>> '+s);
             this.newLine('user');
         }

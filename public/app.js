@@ -98,6 +98,7 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
         }, {
             key: 'sysWrite',
             value: function sysWrite(s) {
+                s = s.split("\n").join('<br>   ');
                 this.updateLine('>> ' + s);
                 this.newLine('user');
             }
