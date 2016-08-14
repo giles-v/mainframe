@@ -19,6 +19,7 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
 
             this.f = form;
             this.i = input;
+            this.lastCmd = false;
             this.addListeners();
             telegraph(this);
         }
@@ -41,11 +42,27 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
                 this.i.focus();
                 document.addEventListener('click', this.onDocClick.bind(this));
                 this.i.addEventListener('input', this.onInput.bind(this));
+                document.addEventListener('keyup', this.onKeyUp.bind(this));
             }
         }, {
             key: 'onDocClick',
             value: function onDocClick(e) {
                 this.i.focus();
+            }
+        }, {
+            key: 'onKeyUp',
+            value: function onKeyUp(e) {
+                console.log(e.keyCode);
+                if (e.keyCode === 38) {
+                    // up arrow
+                    this.i.value = this.lastCmd;
+                    this.onInput(e);
+                }
+                if (e.keyCode === 40) {
+                    // down arrow
+                    this.i.value = '';
+                    this.onInput(e);
+                }
             }
         }, {
             key: 'onInput',
@@ -56,7 +73,11 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
             key: 'onFormSubmit',
             value: function onFormSubmit(e) {
                 e.preventDefault();
-                this.emit('console:enter', { val: this.i.value.trim() });
+                var cmd = this.i.value.trim();
+                if (cmd !== '') {
+                    this.lastCmd = cmd;
+                }
+                this.emit('console:enter', { val: cmd });
                 this.f.reset();
             }
         }]);

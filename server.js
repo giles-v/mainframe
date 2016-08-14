@@ -70,14 +70,17 @@ class TerminalServer {
         res.type('application/json');
         var respJson = { 'msg': 'Unknown Command' };
         var cmd = req.body.cmd;
+        this.appResponses = [];
 
         if (this.consoleApp) {
-            respJson.msg = this.consoleApp.getResponse(cmd);
+            this.consoleApp.processCommand(cmd);
+            respJson.msg = this.appResponses.join("\n");
         }
         else {
             var newApp = this.findApp(cmd);
             if (newApp) {
-                respJson.msg = this.launchApp(newApp);
+                this.launchApp(newApp);
+                respJson.msg = this.appResponses.join("\n");
             }
             else {
                 var response = this.getResponder(cmd)
@@ -90,6 +93,11 @@ class TerminalServer {
         res.send(JSON.stringify(respJson));
     }
 
+    catchMessage(e) {
+        console.log(e);
+        this.appResponses.push(e.s);
+    }
+
     findApp(s) {
         if (s in this.cmds) {
             return this.cmds[s];
@@ -99,11 +107,9 @@ class TerminalServer {
 
     launchApp(className) {
         this.consoleApp = new className();
-        this.consoleApp.on(
-            'consoleapp:end', 
-            this.onAppComplete.bind(this)
-        );
-        return this.consoleApp.begin();
+        this.consoleApp.on('consoleapp:output', this.catchMessage.bind(this));
+        this.consoleApp.on('consoleapp:end', this.onAppComplete.bind(this));
+        this.consoleApp.begin();
     }
 
     onAppComplete(e) {
@@ -137,4 +143,4 @@ var GuessOrDeath = require('./lib/guessordeath.js');
 server.registerCommand('god', GuessOrDeath);
 
 var Greeter = require('./lib/greeter.js');
-server.registerResponder('(hello|hi|hiya|yo)', Greeter);
+server.registerResponder('^(hello|hi|hiya|yo)\\s*$', Greeter);
