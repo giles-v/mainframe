@@ -6,13 +6,18 @@ class TerminalServer {
     constructor() {
         console.log("Terminal server starting...");
         var express = require('express');
-        this.fallbackPort = 3000;
         this.app = express();
+
+        var http = require('http').Server(this.app);
+        this.io = require('socket.io')(http);
+
+        this.db = require('monk')('localhost/nexus');
+
         this.cmds = {};
-        this.consoleApp = null;
         this.responses = {};
-        this.app.set('port', process.env.PORT || this.fallbackPort);
-        this.app.listen(this.app.get('port'), this.appListening.bind(this));
+        this.sessions = {};
+
+        http.listen(3000, this.appListening.bind(this)); 
 
         var bodyParser = require('body-parser')
         this.app.use(bodyParser.json());
@@ -26,21 +31,40 @@ class TerminalServer {
         this.app.use(function(err, req, res, next) {
             res.status(err.status || 500);
             console.log("ERROR", err);
-            res.render('error', {
-                message: err.message,
-                error: err
-            });
         });
-        this.db = require('monk')('localhost/nexus');
         
+        this.loadModules('apps', this.registerApp.bind(this));
+        this.loadModules('responses', this.registerResponder.bind(this));
+        var ErrorResponse = require('./lib/errorresponse.js');
+        this.errorResponse = new ErrorResponse();
+
+        this.setupSocketComms();
         this.setupRoutes();
         this.setupTemplates();
+
+        this.globalLoginComplete = false;
+        this.options = this.db.get('options');
+        this.options.count({ 'has_logged_in': true }).then(function(result) {
+            this.globalLoginComplete = (result > 0);
+            console.log("global login state is", this.globalLoginComplete);
+        }.bind(this));
+    }
+
+    loadModules(libDir, callback) {
+        var dir = 'lib/' + libDir + '/';
+        var normalizedPath = require("path").join(__dirname, dir);
+        require("fs").readdirSync(normalizedPath).forEach(function(file) {
+            var theModule = require("./" + dir + file);
+            var moduleInstance = new theModule(this.db);
+            callback(moduleInstance.getInputExpr(), theModule);
+        }.bind(this));
     }
 
     setupRoutes() {
-        this.app.get('/', this.handleIndex.bind(this));
-        this.app.get('/checklogin', this.checkLogin.bind(this));
-        this.app.post('/cmd', this.postCmd.bind(this));
+        this.app.get('/', function(req, res) {
+            this.greetings = require('./lib/greetings.js');
+            res.render('home', { greeting: this.greetings.greeting() });
+        }.bind(this));
     }
 
     setupTemplates() {
@@ -50,52 +74,96 @@ class TerminalServer {
         this.app.set('view engine', 'handlebars');
     }
 
-    checkLogin(req, res) {
-        this.options = this.db.get('options');
-        this.options.count({ 'has_logged_in': true }).then(function(result) {
-            res.type('application/json');
-            res.send(JSON.stringify({ 'has_logged_in': result > 0 }));
-        });
+    setupSocketComms() {
+        this.io.on('connection', this.onClientConnected.bind(this));
     }
 
-    registerCommand(inputStr, className) {
-        this.cmds[inputStr] = className;
+    onClientConnected(client) {
+        console.log('User '+client.id+' connected.');
+        this.sessions[client.id] = {
+            currentApp: null,
+            lastCmd: null
+        };
+        client.on('disconnect', function(){
+            console.log('User '+client.id+' disconnected.');
+            delete this.sessions[client.id];
+        }.bind(this));
+        client.on('login', function() {
+            console.log("Client "+client.id+" sent LOGIN");
+            this.allowSocketInputFor(client);
+        }.bind(this));
     }
 
-    registerResponder(inputExpr, className) {
-        this.responses[inputExpr] = className;
+    allowSocketInputFor(client) {
+        client.on('command', function(cmd) {
+            console.log('User '+client.id+' sent command "'+cmd+'".');
+            if (!this.globalLoginComplete) {
+                this.processLoginAttempt(client, cmd);
+            }
+            else {
+                this.processCommand(client, cmd);
+            }
+        }.bind(this));
+        client.emit('begin', this.globalLoginComplete);
     }
 
-    postCmd(req, res) {
-        res.type('application/json');
-        var respJson = { 'msg': 'Unknown Command' };
-        var cmd = req.body.cmd;
-        this.appResponses = [];
+    disableSocketInputFor(client) {
+        client.on('command', function(){});
+        client.emit('end');
+    }
 
-        if (this.consoleApp) {
-            this.consoleApp.processCommand(cmd);
-            respJson.msg = this.appResponses.join("\n");
+    processLoginAttempt(client, cmd) {
+        if (cmd.toLowerCase()==='mike') {
+            // set the option - TODO
+            this.options.findOneAndUpdate({ 'has_logged_in': false }, { 'has_logged_in': true }).then(function(result) {
+                console.log("result of updating has_logged_in", result);
+            });
+            this.globalLoginComplete = true;
+            this.respond(client, 'Welcome {MIKE}. I trust you\'re well. Let me know how I can help.');
+        }
+        else {
+            this.respond(client, 'Your puny response is logged. Campus police will be around shortly.');
+            this.disableSocketInputFor(client);
+        }
+    }
+
+    processCommand(client, cmd) {
+        var responseMsg = 'Unknown Command';
+        var session = this.sessions[client.id];
+        if (session.currentApp) {
+            session.currentApp.processCommand(cmd);
         }
         else {
             var newApp = this.findApp(cmd);
             if (newApp) {
-                this.launchApp(newApp);
-                respJson.msg = this.appResponses.join("\n");
+                session.currentApp = new newApp(this.db);
+                session.currentApp.on('consoleapp:output', s => this.respond(client, s.s));
+                session.currentApp.on('consoleapp:end',    () => delete session.currentApp);
+                session.currentApp.begin();
             }
             else {
-                var response = this.getResponder(cmd)
-                if (response) {
-                    respJson.msg = response;
+                var response = this.getResponder(cmd, this.db);
+                if (!response) {
+                    response = this.errorResponse.getResponse('');
                 }
+                this.respond(client, response);
             }
         }
-
-        res.send(JSON.stringify(respJson));
     }
 
-    catchMessage(e) {
-        console.log(e);
-        this.appResponses.push(e.s);
+    respond(client, msg) {
+        console.log('Client', client.id, '- sending response "'+msg+'"');
+        client.emit('response', msg);
+    }
+
+    registerApp(inputStr, className) {
+        console.log("Registered app", className.name);
+        this.cmds[inputStr] = className;
+    }
+
+    registerResponder(inputExpr, className) {
+        console.log("Registered responder", className.name);
+        this.responses[inputExpr] = className;
     }
 
     findApp(s) {
@@ -105,42 +173,24 @@ class TerminalServer {
         return false;
     }
 
-    launchApp(className) {
-        this.consoleApp = new className();
-        this.consoleApp.on('consoleapp:output', this.catchMessage.bind(this));
-        this.consoleApp.on('consoleapp:end', this.onAppComplete.bind(this));
-        this.consoleApp.begin();
-    }
-
-    onAppComplete(e) {
-        this.consoleApp = null;
-    }
-
-    getResponder(s) {
+    getResponder(s, db) {
         for(var i in this.responses) {
             var r = new RegExp(i, 'i');
             if (s.match(r)) {
-                var response = new this.responses[i]();
+                var response = new this.responses[i](db);
+                response.on('globallogout', function() {
+                    console.log("global logout");
+                    this.globalLoginComplete = false;
+                }.bind(this));
                 return response.getResponse(s);
             }
         }
         return false;
     }
 
-    handleIndex(req, res) {
-        this.greetings = require('./lib/greetings.js');
-        res.render('home', { greeting: this.greetings.greeting() });
-    }
-
     appListening() {
-        console.log('Express running on port', this.app.get('port'));
+        console.log('Express running on port 3000');
     }
 }
 
 var server = new TerminalServer();
-
-var GuessOrDeath = require('./lib/guessordeath.js');
-server.registerCommand('god', GuessOrDeath);
-
-var Greeter = require('./lib/greeter.js');
-server.registerResponder('^(hello|hi|hiya|yo)\\s*$', Greeter);

@@ -52,7 +52,6 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
         }, {
             key: 'onKeyUp',
             value: function onKeyUp(e) {
-                console.log(e.keyCode);
                 if (e.keyCode === 38) {
                     // up arrow
                     this.i.value = this.lastCmd;
@@ -112,6 +111,11 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
                 this.p.innerHTML = s;
             }
         }, {
+            key: 'setLineSource',
+            value: function setLineSource(source) {
+                this.p.setAttribute('class', source);
+            }
+        }, {
             key: 'userWrite',
             value: function userWrite(s) {
                 this.updateLine('? ' + s);
@@ -120,8 +124,15 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
             key: 'sysWrite',
             value: function sysWrite(s) {
                 s = s.split("\n").join('<br>   ');
+                this.setLineSource('system');
                 this.updateLine('>> ' + s);
                 this.newLine('user');
+            }
+        }, {
+            key: 'disable',
+            value: function disable() {
+                this.updateLine('');
+                this.p.classList.add('disabled');
             }
         }, {
             key: 'updateScroll',
@@ -145,19 +156,33 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
             this.createCountdown('2016-10-29 10:00:00.000');
             this.endpoint = 'cmd';
 
-            setTimeout(this.enable.bind(this), 2000);
+            socket.emit('login');
+            socket.on('begin', this.enable.bind(this));
+            socket.on('end', this.disable.bind(this));
         }
 
         _createClass(Console, [{
             key: 'enable',
-            value: function enable() {
+            value: function enable(s) {
                 this['in'] = new ConsoleInput(document.querySelector('form#cmd'), document.querySelector('input#main'));
                 this.out = new ConsoleOutput(document.getElementById('out'));
+
+                this.out.sysWrite(s ? 'Welcome back, user.' : 'Interloper detected. Identify yourself');
 
                 this['in'].on('console:input', this.onConsoleInput.bind(this));
                 this['in'].on('console:enter', this.onConsoleEnter.bind(this));
 
+                socket.on('response', this.receive.bind(this));
+
                 document.body.classList.add('ready');
+            }
+        }, {
+            key: 'disable',
+            value: function disable() {
+                this['in'].disable();
+                this.out.sysWrite('--== SESSION ENDS ==--');
+                this.out.disable();
+                disableInput();
             }
         }, {
             key: 'disableInput',
@@ -199,34 +224,12 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
         }, {
             key: 'send',
             value: function send(command) {
-                var xhr = new XMLHttpRequest();
-                xhr.addEventListener('load', this.onXHRLoaded.bind(this));
-                xhr.addEventListener("error", this.onXHREnded.bind(this));
-                xhr.addEventListener("abort", this.onXHREnded.bind(this));
-                xhr.open('POST', this.endpoint);
-                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.send(JSON.stringify({ 'cmd': command }));
-            }
-        }, {
-            key: 'onXHRLoaded',
-            value: function onXHRLoaded(e) {
-                var xhr = e.currentTarget;
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    this.receive(JSON.parse(xhr.responseText));
-                } else {
-                    this.out.sysWrite('SERVER CONNECTION LOST. THE RIFT YAWNS');
-                }
-            }
-        }, {
-            key: 'onXHREnded',
-            value: function onXHREnded(e) {
-                this.out.sysWrite('SERVER CONNECTION LOST. THE RIFT YAWNS');
+                socket.emit('command', command);
             }
         }, {
             key: 'receive',
             value: function receive(s) {
-                this.out.sysWrite(s.msg);
+                this.out.sysWrite(s);
                 this.enableInput();
             }
         }, {

@@ -23,7 +23,8 @@
     "express-session": "^1.14.0",
     "express3-handlebars": "^0.5.2",
     "mongodb": "^2.2.5",
-    "monk": "^3.1.1"
+    "monk": "^3.1.1",
+    "socket.io": "^1.4.8"
   },
   "devDependencies": {
     "babel-watch": "^2.0.2",

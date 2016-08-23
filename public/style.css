@@ -76,6 +76,9 @@ main > p:first-child {
   vertical-align: top;
   animation: blink 0.5s infinite;
 }
+#out p.disabled:after {
+  display: none;
+}
 
 div.input {
   display: inline-block;
