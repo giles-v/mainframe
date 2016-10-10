@@ -119,9 +119,31 @@ require(['vendor/telegraph', 'vendor/tock'], function(telegraph, Tock) {
 
     class Console {
         constructor() {
-            this.createCountdown('2016-10-29 10:00:00.000');
+            this.createCountdown('2016-10-29 11:00:00.000');
             this.endpoint = 'cmd';
+            this.showIntro().then(this.init.bind(this));
+        }
 
+        showIntro() {
+            return new Promise(function(resolve, reject) {
+                var bls = document.querySelectorAll('#boot p');
+                var bl_arr = Array.from(bls);
+                var f = () => {
+                    var bl = bl_arr.shift();
+                    if (bl) {
+                        bl.style.display = 'block';
+                        setTimeout(f, 300 + Math.floor(500 * Math.random()));
+                    }
+                    else {
+                        document.getElementById('postboot').style.display = 'block';
+                        setTimeout(resolve, 300 + Math.floor(500 * Math.random()));
+                    }
+                };
+                setTimeout(f, 2000);
+            });
+        }
+
+        init() {
             socket.emit('login');
             socket.on('begin', this.enable.bind(this));
             socket.on('end',   this.disable.bind(this));
@@ -132,21 +154,27 @@ require(['vendor/telegraph', 'vendor/tock'], function(telegraph, Tock) {
             this.out = new ConsoleOutput(document.getElementById('out'));
 
             this.out.sysWrite(s
-                ? 'Welcome back, user.'
-                : 'Interloper detected. Identify yourself'
+                ? 'Chronal adjustment confirmed, awaiting orbital insertion.'
+                : 'Confirm local conversion (YYYY-MM-DD HH:MM:SS):'
             );
 
-            this.in.on('console:input', this.onConsoleInput.bind(this));
-            this.in.on('console:enter', this.onConsoleEnter.bind(this));
+            if (s) {
+                this.out.disable();
+                disableInput();
+            }
+            else {
+                this.in.on('console:input', this.onConsoleInput.bind(this));
+                this.in.on('console:enter', this.onConsoleEnter.bind(this));
 
-            socket.on('response', this.receive.bind(this));
+                socket.on('response', this.receive.bind(this));
 
-            document.body.classList.add('ready');
+                document.body.classList.add('ready');
+            }
         }
 
         disable() {
             this.in.disable();
-            this.out.sysWrite('--== SESSION ENDS ==--');
+            // this.out.sysWrite('--== SESSION ENDS ==--');
             this.out.disable();
             disableInput();
         }
@@ -198,7 +226,7 @@ require(['vendor/telegraph', 'vendor/tock'], function(telegraph, Tock) {
                 countdown: true,
                 interval: 1000,
                 callback: function () {
-                    document.getElementById('timerOut').innerHTML = 'Initialization in '+countdown.lap()+' milliseconds.';
+                    document.getElementById('timerOut').innerHTML = countdown.lap()+' milliseconds';
                 }
             });
             countdown.start(countdown.timeToMS(endDate));

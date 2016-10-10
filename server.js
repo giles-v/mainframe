@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 'use strict';
 
 require('./public/vendor/telegraph.js');
@@ -62,8 +64,21 @@ class TerminalServer {
 
     setupRoutes() {
         this.app.get('/', function(req, res) {
-            this.greetings = require('./lib/greetings.js');
-            res.render('home', { greeting: this.greetings.greeting() });
+
+            if (req.query.resetlogin==='y') {
+                console.log(" --- RESETTING LOGIN AUTH");
+                this.options = this.db.get('options');
+                this.options.findOneAndUpdate(
+                    { 'has_logged_in': true }, 
+                    { 'has_logged_in': false }
+                ).then(function(result) {
+                    console.log("Login reset result:", result);
+                    if (result) this.globalLoginComplete = false;
+                }.bind(this));
+            }
+
+            this.bootlines = require('./lib/bootlines.js');
+            res.render('home', { bootlines: this.bootlines.get() });
         }.bind(this));
     }
 
@@ -113,17 +128,18 @@ class TerminalServer {
     }
 
     processLoginAttempt(client, cmd) {
-        if (cmd.toLowerCase()==='mike') {
+        if (cmd.toLowerCase()==='2016-10-29 11:00:00') {
             // set the option - TODO
             this.options.findOneAndUpdate({ 'has_logged_in': false }, { 'has_logged_in': true }).then(function(result) {
                 console.log("result of updating has_logged_in", result);
             });
             this.globalLoginComplete = true;
-            this.respond(client, 'Welcome {MIKE}. I trust you\'re well. Let me know how I can help.');
+            this.respond(client, 'Chronal adjustment confirmed, awaiting orbital insertion.');
+            this.disableSocketInputFor(client);
         }
         else {
-            this.respond(client, 'Your puny response is logged. Campus police will be around shortly.');
-            this.disableSocketInputFor(client);
+            this.respond(client, 'Error in chronal adjustment, please re-calculate.');
+            // this.disableSocketInputFor(client);
         }
     }
 
