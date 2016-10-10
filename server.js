@@ -13,7 +13,13 @@ class TerminalServer {
         var http = require('http').Server(this.app);
         this.io = require('socket.io')(http);
 
-        this.db = require('monk')('localhost/nexus');
+        this.CONTENTFUL_API_KEY  = '585fa3a9e7f2dec1289c5f70e0c017caffc186301ffac2e30025c3dd808c0c97';
+        this.CONTENTFUL_SPACE_ID = 'cop31ntb53h6';
+        var contentful = require('contentful');
+        this.db = contentful.createClient({
+            space: this.CONTENTFUL_SPACE_ID,
+            accessToken: this.CONTENTFUL_API_KEY
+        });
 
         this.cmds = {};
         this.responses = {};
@@ -45,11 +51,62 @@ class TerminalServer {
         this.setupTemplates();
 
         this.globalLoginComplete = false;
-        this.options = this.db.get('options');
-        this.options.count({ 'has_logged_in': true }).then(function(result) {
-            this.globalLoginComplete = (result > 0);
-            console.log("global login state is", this.globalLoginComplete);
-        }.bind(this));
+        this.getGlobalLoginValue().then((val) => {
+            this.globalLoginComplete = val;
+            console.log("this.globalLoginComplete = ", this.globalLoginComplete);
+        });
+        this.setGlobalLoginValue(true);
+    }
+
+    getGlobalLoginValue() {
+        return new Promise((resolve, reject) => {
+            this.db.getEntries({
+                'content_type': 'option',
+                'fields.key': 'has_entered_correct_date'
+            }).then(
+                (entries) => {
+                    entries.items.forEach((item) => {
+                        resolve(item.fields.value.value);
+                    });
+                }, 
+                (err) => {
+                    console.log(err);
+                }
+            );
+        });
+    }
+
+    setGlobalLoginValue(val) {
+        this.getContentfulManagement().getSpace(this.CONTENTFUL_SPACE_ID).then(
+            (space) => {
+                console.log("got space");
+                /*
+                space.getEntries({
+                    'content_type': 'option',
+                    'fields.key': 'has_entered_correct_date'
+                }).then((entries) => {
+                    console.log(entries);
+                    entries.items.forEach((item) => {
+                        console.log("SOMETHING", item.fields.value.value);
+                    });
+                });
+                */
+            }, 
+            (err) => {
+                console.log(err);
+            }
+        );
+    }
+
+    getContentfulManagement() {
+        if (!this.contentful_management) {
+            var contentful_mgmt = require('contentful-management')
+            this.contentful_management = contentful_mgmt.createClient({
+                accessToken: this.CONTENTFUL_API_KEY
+            });
+            console.log("Created contentful-management object");
+        }
+        return this.contentful_management;
     }
 
     loadModules(libDir, callback) {
