@@ -1,4 +1,10 @@
 {
-  "mike": "password1",
-  "adam": "password2"
+	"mike": {
+		"password": "mike",
+		"displayName": "Michael"
+	},
+	"adam": {
+		"password": "adam",
+		"displayName": "Telic"
+	}
 }
