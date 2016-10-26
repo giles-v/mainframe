@@ -13,11 +13,17 @@ class TerminalServer {
         var http = require('http').Server(this.app);
         this.io = require('socket.io')(http);
 
-        this.db = require('monk')('localhost/nexus');
+        // this.db = require('./lib/datastore_mongo')('localhost:27017', 'nexus');
+        var dataPath = require("path").join(__dirname, 'data');
+        this.db = require('./lib/datastore_json')(dataPath);
 
         this.cmds = {};
+        this.cmd_descriptions = [];
         this.responses = {};
         this.sessions = {};
+        this.clients = [];
+        this.appsPath = require("path").join(__dirname, 'lib/apps');
+        this.appsGlobalState = {};
 
         http.listen(3000, this.appListening.bind(this)); 
 
@@ -25,11 +31,11 @@ class TerminalServer {
         this.app.use(bodyParser.json());
 
         this.app.use(express.static(__dirname + '/public'));
-        this.app.use(function(req, res, next){
+        this.app.use((req, res, next) => {
             res.locals.showTests = (this.app.get('env') !== 'production' &&
                     req.query.test === '1');
             next();
-        }.bind(this));
+        });
         this.app.use(function(err, req, res, next) {
             res.status(err.status || 500);
             console.log("ERROR", err);
@@ -43,43 +49,26 @@ class TerminalServer {
         this.setupSocketComms();
         this.setupRoutes();
         this.setupTemplates();
-
-        this.globalLoginComplete = false;
-        this.options = this.db.get('options');
-        this.options.count({ 'has_logged_in': true }).then(function(result) {
-            this.globalLoginComplete = (result > 0);
-            console.log("global login state is", this.globalLoginComplete);
-        }.bind(this));
     }
 
     loadModules(libDir, callback) {
         var dir = 'lib/' + libDir + '/';
         var normalizedPath = require("path").join(__dirname, dir);
-        require("fs").readdirSync(normalizedPath).forEach(function(file) {
-            var theModule = require("./" + dir + file);
-            var moduleInstance = new theModule(this.db);
-            callback(moduleInstance.getInputExpr(), theModule);
-        }.bind(this));
+        require("fs").readdirSync(normalizedPath).forEach((file) => {
+            var module = require("./" + dir + file);
+            var instance = new module(this.db);
+            console.log("Loading module", instance.constructor.name);
+            if (instance.isEnabled()) {
+                callback(module, instance);
+            }
+        });
     }
 
     setupRoutes() {
-        this.app.get('/', function(req, res) {
-
-            if (req.query.resetlogin==='y') {
-                console.log(" --- RESETTING LOGIN AUTH");
-                this.options = this.db.get('options');
-                this.options.findOneAndUpdate(
-                    { 'has_logged_in': true }, 
-                    { 'has_logged_in': false }
-                ).then(function(result) {
-                    console.log("Login reset result:", result);
-                    if (result) this.globalLoginComplete = false;
-                }.bind(this));
-            }
-
+        this.app.get('/', (req, res) => {
             this.bootlines = require('./lib/bootlines.js');
             res.render('home', { bootlines: this.bootlines.get() });
-        }.bind(this));
+        });
     }
 
     setupTemplates() {
@@ -94,53 +83,64 @@ class TerminalServer {
     }
 
     onClientConnected(client) {
-        console.log('User '+client.id+' connected.');
+        console.log('User', client.id, 'connected.');
         this.sessions[client.id] = {
             currentApp: null,
             lastCmd: null
         };
-        client.on('disconnect', function(){
+        this.clients.push(client);
+        // console.log("Client list:"); console.log(this.clients.map(c => (c.id)));
+        client.on('disconnect', () => {
             console.log('User '+client.id+' disconnected.');
+            this.clients = this.clients.filter(c => (c.id !== client.id));
+            if ('session' in client && 'currentApp' in client.session) {
+                this.onAppEnds(client);
+            }
             delete this.sessions[client.id];
-        }.bind(this));
-        client.on('login', function() {
+        });
+        client.on('login', () => {
             console.log("Client "+client.id+" sent LOGIN");
+            var session = this.sessions[client.id];
+            client.session = session;
+            var Login = require(this.appsPath + '/login');
+            session.currentApp = new Login(this.db);
+            session.currentApp.on('consoleapp:output',  s => this.respond(client, s.s, s.class));
+            session.currentApp.on('consoleapp:end',     () => this.onAppEnds(client));
+            session.currentApp.on('login:success',      (user) => {
+                console.log("LOGIN SUCCESS");
+                console.log(user);
+                session.loginComplete = true;
+                session.user = user;
+                this.onAppEnds(client);
+            });
+            session.currentApp.begin();
             this.allowSocketInputFor(client);
-        }.bind(this));
+        });
+    }
+
+    onAppEnds(client) {
+        var session = this.sessions[client.id];
+        
+        if (session.currentApp.isChat()) {
+            this.appBroadcast(session.currentApp.constructor.name, session.user.displayName + ' has left.');
+        }
+
+        delete session.currentApp;
+        this.respond(client, "Please select an option:\n" + this.cmd_descriptions.join("\n"));
     }
 
     allowSocketInputFor(client) {
-        client.on('command', function(cmd) {
+        client.on('command', (cmd) => {
             console.log('User '+client.id+' sent command "'+cmd+'".');
-            if (!this.globalLoginComplete) {
-                this.processLoginAttempt(client, cmd);
-            }
-            else {
-                this.processCommand(client, cmd);
-            }
-        }.bind(this));
-        client.emit('begin', this.globalLoginComplete);
+            var session = this.sessions[client.id];
+            this.processCommand(client, cmd);
+        });
+        client.emit('begin', 'Please self-identify');
     }
 
     disableSocketInputFor(client) {
         client.on('command', function(){});
         client.emit('end');
-    }
-
-    processLoginAttempt(client, cmd) {
-        if (cmd.toLowerCase()==='2016-10-29 11:00:00') {
-            // set the option - TODO
-            this.options.findOneAndUpdate({ 'has_logged_in': false }, { 'has_logged_in': true }).then(function(result) {
-                console.log("result of updating has_logged_in", result);
-            });
-            this.globalLoginComplete = true;
-            this.respond(client, 'Chronal adjustment confirmed, awaiting orbital insertion.');
-            this.disableSocketInputFor(client);
-        }
-        else {
-            this.respond(client, 'Error in chronal adjustment, please re-calculate.');
-            // this.disableSocketInputFor(client);
-        }
     }
 
     processCommand(client, cmd) {
@@ -150,12 +150,20 @@ class TerminalServer {
             session.currentApp.processCommand(cmd);
         }
         else {
+            console.log("this.appsGlobalState:");
+            console.log(this.appsGlobalState);
             var newApp = this.findApp(cmd);
             if (newApp) {
-                session.currentApp = new newApp(this.db);
-                session.currentApp.on('consoleapp:output', s => this.respond(client, s.s));
-                session.currentApp.on('consoleapp:end',    () => delete session.currentApp);
+                session.currentApp = new newApp(this.db, client, this.appsGlobalState[cmd]);
+                session.currentApp.on('consoleapp:output',       s => this.respond(client, s.s, s.className));
+                session.currentApp.on('consoleapp:appbroadcast', s => this.appBroadcast(s.app, s.s));
+                session.currentApp.on('consoleapp:end',          () => this.onAppEnds(client));
                 session.currentApp.begin();
+
+                if (session.currentApp.isChat()) {
+                    session.currentApp.server = this;
+                    this.appBroadcast(session.currentApp.constructor.name, session.user.displayName + ' has joined.');
+                }
             }
             else {
                 var response = this.getResponder(cmd, this.db);
@@ -167,14 +175,36 @@ class TerminalServer {
         }
     }
 
-    respond(client, msg) {
+    respond(client, msg, className) {
         console.log('Client', client.id, '- sending response "'+msg+'"');
-        client.emit('response', msg);
+        client.emit('response', { s:msg, class:className });
     }
 
-    registerApp(inputStr, className) {
-        console.log("Registered app", className.name);
-        this.cmds[inputStr] = className;
+    appBroadcast(app, msg) {
+        console.log("Broadcasting", msg, "to all users of", app);
+        this.getUsersOf(app).forEach(c => {
+            console.log("Client", c.id, "is currently using", app, "- sending.");
+            this.respond(c, msg, app.toLowerCase());
+        });
+    }
+
+    getUsersOf(app) {
+        return this.clients.filter(
+            c => ('session' in c && 'currentApp' in c.session && c.session.currentApp.constructor.name === app)
+        );
+    }
+
+    getOtherUsernamesForApp(app, exceptClient) {
+        var users = this.getUsersOf(app);
+        var otherUsers = users.filter(c => (c.id !== exceptClient.id));
+        return otherUsers.map(c => (c.session.user.displayName));
+    }
+
+    registerApp(module, instance) {
+        console.log("Registered app", module.name);
+        this.cmd_descriptions.push(instance.getInputExpr() + '. ' + instance.getName());
+        this.cmds[instance.getInputExpr()] = module;
+        this.appsGlobalState[instance.getInputExpr()] = {};
     }
 
     registerResponder(inputExpr, className) {
@@ -194,10 +224,6 @@ class TerminalServer {
             var r = new RegExp(i, 'i');
             if (s.match(r)) {
                 var response = new this.responses[i](db);
-                response.on('globallogout', function() {
-                    console.log("global logout");
-                    this.globalLoginComplete = false;
-                }.bind(this));
                 return response.getResponse(s);
             }
         }

@@ -79,6 +79,9 @@ main > p:first-child {
 #out p.system {
   opacity: .7;
 }
+#out p.commsarray {
+  margin-top: 0;
+}
 #out p:last-child:after {
   content: '';
   width: 0.6em;

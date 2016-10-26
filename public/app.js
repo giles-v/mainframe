@@ -122,9 +122,13 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
             }
         }, {
             key: 'sysWrite',
-            value: function sysWrite(s) {
+            value: function sysWrite(s, className) {
                 s = s.split("\n").join('<br>   ');
-                this.setLineSource('system');
+                var lineClass = 'system';
+                if (className) {
+                    lineClass += ' ' + className;
+                }
+                this.setLineSource(lineClass);
                 this.updateLine('>> ' + s);
                 this.newLine('user');
             }
@@ -153,7 +157,7 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
         function Console() {
             _classCallCheck(this, Console);
 
-            this.createCountdown('2016-10-29 11:00:00.000');
+            this.createCountdown('2016-09-29 11:00:00.000');
             this.endpoint = 'cmd';
             this.showIntro().then(this.init.bind(this));
         }
@@ -190,25 +194,20 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
                 this['in'] = new ConsoleInput(document.querySelector('form#cmd'), document.querySelector('input#main'));
                 this.out = new ConsoleOutput(document.getElementById('out'));
 
-                this.out.sysWrite(s ? 'Chronal adjustment confirmed, awaiting orbital insertion.' : 'Confirm local conversion (YYYY-MM-DD HH:MM:SS):');
+                this.out.sysWrite('Chronal adjustment confirmed as local temporal co-ordinates 2016-10-29 13:00, awaiting orbital insertion.');
+                this.out.sysWrite(s);
 
-                if (s) {
-                    this.out.disable();
-                    disableInput();
-                } else {
-                    this['in'].on('console:input', this.onConsoleInput.bind(this));
-                    this['in'].on('console:enter', this.onConsoleEnter.bind(this));
+                this['in'].on('console:input', this.onConsoleInput.bind(this));
+                this['in'].on('console:enter', this.onConsoleEnter.bind(this));
 
-                    socket.on('response', this.receive.bind(this));
+                socket.on('response', this.receive.bind(this));
 
-                    document.body.classList.add('ready');
-                }
+                document.body.classList.add('ready');
             }
         }, {
             key: 'disable',
             value: function disable() {
                 this['in'].disable();
-                // this.out.sysWrite('--== SESSION ENDS ==--');
                 this.out.disable();
                 disableInput();
             }
@@ -256,8 +255,8 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
             }
         }, {
             key: 'receive',
-            value: function receive(s) {
-                this.out.sysWrite(s);
+            value: function receive(o) {
+                this.out.sysWrite(o.s, o.class);
                 this.enableInput();
             }
         }, {
