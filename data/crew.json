@@ -1,14 +1,14 @@
-{
-	"hrothgar": {
-	  "name": "Hrothgar Rock",
-	  "role": "Pilot",
-	  "status": "Missing",
-	  "bio": "Hrothgar's attention to detail-oriented action plans has earned him many accolades among his peers. He approaches problems with a top-down waterfall management style and has a proven track record of delivering cost savings.\nHrothgar joined the academy in A.D. 3188 following graduation at Swansea Space School."
+[
+	{
+		"name": "Hrothgar Rock",
+		"role": "Pilot",
+		"status": "Missing",
+		"bio": "Hrothgar's attention to detail-oriented action plans has earned him many accolades among his peers. He approaches problems with a top-down waterfall management style and has a proven track record of delivering cost savings.\n\nHrothgar joined the academy in A.D. 3188 following graduation at Swansea Space School."
 	},
-	"aelfred": {
+	{
 		"name": "Aelfred the Overt",
 		"role": "Jester",
   		"status": "deceased",
-  		"bio": "Aelfred has been the ship's jester since the first launch, stoically regaling the crew during battles both military and emotional. His unique ability to lift afflicted spirits by a judicial application of psilocybin and gratuitous physical contact is a key part of the ship's incredible victory record.\nAelfred was sadly killed during a routine maneuvre when he tripped entering the transporter and was ripped into two segments."
+  		"bio": "Aelfred has been the ship's jester since the first launch, stoically regaling the crew during battles both military and emotional. His unique ability to lift afflicted spirits by a judicial application of psilocybin and gratuitous physical contact is a key part of the ship's incredible victory record.\n\nAelfred was sadly killed during a routine maneuvre when he tripped entering the transporter and was ripped into two segments."
 	}
-}
+]

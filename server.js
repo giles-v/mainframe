@@ -89,7 +89,6 @@ class TerminalServer {
             lastCmd: null
         };
         this.clients.push(client);
-        // console.log("Client list:"); console.log(this.clients.map(c => (c.id)));
         client.on('disconnect', () => {
             console.log('User '+client.id+' disconnected.');
             this.clients = this.clients.filter(c => (c.id !== client.id));
@@ -150,14 +149,13 @@ class TerminalServer {
             session.currentApp.processCommand(cmd);
         }
         else {
-            console.log("this.appsGlobalState:");
-            console.log(this.appsGlobalState);
             var newApp = this.findApp(cmd);
             if (newApp) {
                 session.currentApp = new newApp(this.db, client, this.appsGlobalState[cmd]);
                 session.currentApp.on('consoleapp:output',       s => this.respond(client, s.s, s.className));
                 session.currentApp.on('consoleapp:appbroadcast', s => this.appBroadcast(s.app, s.s));
                 session.currentApp.on('consoleapp:end',          () => this.onAppEnds(client));
+                session.currentApp.server = this;
                 session.currentApp.begin();
 
                 if (session.currentApp.isChat()) {
