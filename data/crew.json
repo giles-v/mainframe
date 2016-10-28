@@ -1,14 +1,34 @@
 [
 	{
-		"name": "Hrothgar Rock",
-		"role": "Pilot",
+		"name": "Linshi",
+		"role": "Xenocultural Communications Officer",
 		"status": "Missing",
-		"bio": "Hrothgar's attention to detail-oriented action plans has earned him many accolades among his peers. He approaches problems with a top-down waterfall management style and has a proven track record of delivering cost savings.\n\nHrothgar joined the academy in A.D. 3188 following graduation at Swansea Space School."
+		"bio": "Probably human. Initially encountered by Commander PsiTech during a diplomatic mission to Tancha IV. Linshi was serving as a trans-species, full spectrum interpreter for the Mercantile Sphere (MS) while they attempted to renegotiate the terms of their trade partnership. As the discussions progressed Linshi realised that Commander PsiTech, hired as mercenary bodyguard to the First Tanchan Prelate, was being wilfully misguided by his assigned translator, with the probable intent of providing a casus beli for the MS.\n\nLinshi broke her neutrality, threatening her reputation as a trusted intermediary, and instructed the Commanmder in secret in the proper forms of address and customary signs of respect. The Nexus was able to withdraw from its contract without incident merely days before the MS destroyed the Tanchan orbital shipyards and laid seige to the planet. Linshi has remained with the Nexus ever since, steering Commander PsiTech through the nuances of strange and alien social interactions>"
+	
 	},
 	{
-		"name": "Aelfred the Overt",
-		"role": "Jester",
-  		"status": "deceased",
-  		"bio": "Aelfred has been the ship's jester since the first launch, stoically regaling the crew during battles both military and emotional. His unique ability to lift afflicted spirits by a judicial application of psilocybin and gratuitous physical contact is a key part of the ship's incredible victory record.\n\nAelfred was sadly killed during a routine maneuvre when he tripped entering the transporter and was ripped into two segments."
+		"name": "Subject",
+		"role": "Core Drive Engineer",
+  		"status": "Missing",
+  		"bio": "Ex mercenary (conscripted). Served with the Scorched Void 6th fleet after being press ganged when they captured the freighter he crewed on. Unwillingly took part in several of the massacres for which the Scorched Void were known for, including overloading his ship's core drive to generate a plasma torch capable of igniting a planet's atmosphere. Indirectly responsible for the deaths of 17 billion colonists the fleet laid waste to the Hecarine system.\n\nAfter the Spiral Coallition defeated the 6th fleet's at the battle of Idiran, in which Commander PsiTech fought as a rogue element, the Subject's escape pod was picked up by the Nexus and he willingly joined the crew. His steadfast loyalty is born partly out of respect and partly out of fear that the Scorched Void will reform and attempt to re-conscript him. PsiTech has assured him he will not stand alone should that day come."
 	}
+		{
+		"name": "Hannibal Hellmuerto",
+		"role": "Deputy Assistant Human Waste Disposal Officer",
+  		"status": "In stasis",
+  		"bio": "Ran away from Zaphod the Magnificent's Pan-Galactic Circus of Terran Terror to join the Nexus."
+	}
+			{
+		"name": "Anastasia IV",
+		"role": "Deputy Assistant Human Waste Disposal Officer",
+  		"status": "In stasis",
+  		"bio": "Ran away from Zaphod the Magnificent's Pan-Galactic Circus of Terran Terror to join the Nexus."
+	}
+				{
+		"name": "iota",
+		"role": "Sysadmin/Hacker",
+  		"status": "Unknown",
+  		"bio": "A homeless punk hacker who was picked up in a second hand tech/junk market out on the edge of the galactic disk. No-one remembers exactly how iota came to join the crew, as the away team who went down to the colony that day ended up in a drinking contest with an android that not only brewed his own perfectly distilled, neurally destructive moonshine, but was fitted with a high-end artificial liver implant. By the time they stumbled back aboard the Nexus iota had granted herself root access to the Nexus Mainframe and was casually tinkering with the gestural interface. The first person to question her presence soon found that the only way to unlock their crew quarters was to seductively undress in the corridor. Since then iota has proved herself a valuable team member and a useful adjunct to AI Nereid's capabilities, especially when hacker skills are needed for an off-ship mission."
+	}
+	
 ]
