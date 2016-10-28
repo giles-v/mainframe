@@ -153,7 +153,7 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
         function Console() {
             _classCallCheck(this, Console);
 
-            this.createCountdown('2016-10-29 11:00:00.000');
+            this.createCountdown('2016-10-29 08:00:00.000 EDT');
             this.endpoint = 'cmd';
             this.showIntro().then(this.init.bind(this));
         }
@@ -190,19 +190,10 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
                 this['in'] = new ConsoleInput(document.querySelector('form#cmd'), document.querySelector('input#main'));
                 this.out = new ConsoleOutput(document.getElementById('out'));
 
-                this.out.sysWrite(s ? 'Chronal adjustment confirmed, awaiting orbital insertion.' : 'Confirm local conversion (YYYY-MM-DD HH:MM:SS):');
+                this.out.sysWrite('Chronal adjustment confirmed as local temporal co-ordinates 2016-10-29 13:00, awaiting orbital insertion.');
 
-                if (s) {
-                    this.out.disable();
-                    disableInput();
-                } else {
-                    this['in'].on('console:input', this.onConsoleInput.bind(this));
-                    this['in'].on('console:enter', this.onConsoleEnter.bind(this));
-
-                    socket.on('response', this.receive.bind(this));
-
-                    document.body.classList.add('ready');
-                }
+                this.out.disable();
+                disableInput();
             }
         }, {
             key: 'disable',
@@ -221,22 +212,6 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
             key: 'enableInput',
             value: function enableInput() {
                 this['in'].enable();
-            }
-        }, {
-            key: 'onConsoleInput',
-            value: function onConsoleInput(d) {
-                this.out.userWrite(d.val);
-            }
-        }, {
-            key: 'onConsoleEnter',
-            value: function onConsoleEnter(d) {
-                if (d.val && !this.runLocalCmd(d.val)) {
-                    this.disableInput();
-                    this.send(d.val);
-                    this.out.newLine('system');
-                } else {
-                    this.out.newLine('user');
-                }
             }
         }, {
             key: 'runLocalCmd',
@@ -268,6 +243,20 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
                     interval: 1000,
                     callback: function callback() {
                         document.getElementById('timerOut').innerHTML = countdown.lap() + ' milliseconds';
+                        if (countdown.lap() <= 0) {
+                            countdown.stop();
+                            var c = document.querySelector('#page main');
+                            c.innerHTML = '';
+                            setTimeout(() => {
+                                c.innerHTML = '<p>ORBITAL TRACK ESTABLISHED</p>';
+                            }, 1000);
+                            setTimeout(() => {
+                                c.innerHTML = '<p>ORBITAL TRACK ESTABLISHED<br>INSERTION IMMINENT</p>';
+                            }, 2000);
+                            setTimeout(() => {
+                                c.innerHTML = '<p>ORBITAL TRACK ESTABLISHED<br>INSERTION IMMINENT</p><p>Stand by...</p>';
+                            }, 3000);
+                        }
                     }
                 });
                 countdown.start(countdown.timeToMS(endDate));
