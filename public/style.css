@@ -78,6 +78,11 @@ main > p:first-child {
 }
 #out p.system {
   opacity: .7;
+  padding-left: 1em;
+  text-indent: -1em;
+}
+#out p.system * {
+  text-indent: 0;
 }
 #out p.commsarray {
   margin-top: 0;
@@ -118,6 +123,16 @@ form#cmd {
 #out em.deceased { 
   background: #f00;
   color: #000;
+}
+
+.bio {
+  display: inline-block;
+}
+.bio-image {
+  max-width: 200px;
+  max-height: 150px;
+  float: left;
+  margin: 0 1em 0 0;
 }
 
 @keyframes blink {

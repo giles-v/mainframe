@@ -123,7 +123,7 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
         }, {
             key: 'sysWrite',
             value: function sysWrite(s, className) {
-                s = s.split("\n").join('<br>   ');
+                s = s.split("\n").join('<br>');
                 var lineClass = 'system';
                 if (className) {
                     lineClass += ' ' + className;
@@ -157,7 +157,6 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
         function Console() {
             _classCallCheck(this, Console);
 
-            this.createCountdown('2016-09-29 11:00:00.000');
             this.endpoint = 'cmd';
             this.showIntro().then(this.init.bind(this));
         }
@@ -174,7 +173,6 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
                             bl.style.display = 'block';
                             setTimeout(f, 300 + Math.floor(500 * Math.random()));
                         } else {
-                            document.getElementById('postboot').style.display = 'block';
                             setTimeout(resolve, 300 + Math.floor(500 * Math.random()));
                         }
                     };
@@ -194,7 +192,6 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
                 this['in'] = new ConsoleInput(document.querySelector('form#cmd'), document.querySelector('input#main'));
                 this.out = new ConsoleOutput(document.getElementById('out'));
 
-                this.out.sysWrite('Chronal adjustment confirmed as local temporal co-ordinates 2016-10-29 13:00, awaiting orbital insertion.');
                 this.out.sysWrite(s);
 
                 this['in'].on('console:input', this.onConsoleInput.bind(this));
@@ -262,14 +259,7 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
         }, {
             key: 'createCountdown',
             value: function createCountdown(endDate) {
-                var countdown = Tock({
-                    countdown: true,
-                    interval: 1000,
-                    callback: function callback() {
-                        document.getElementById('timerOut').innerHTML = countdown.lap() + ' milliseconds';
-                    }
-                });
-                countdown.start(countdown.timeToMS(endDate));
+                
             }
         }]);
 
