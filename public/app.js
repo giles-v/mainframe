@@ -12,7 +12,7 @@ requirejs.config({
     }
 });
 
-require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
+require(['vendor/telegraph', 'vendor/moment'], function (telegraph, moment) {
     var ConsoleInput = (function () {
         function ConsoleInput(form, input) {
             _classCallCheck(this, ConsoleInput);
@@ -153,7 +153,7 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
         function Console() {
             _classCallCheck(this, Console);
 
-            this.createCountdown('2016-10-29 08:00:00.000 EDT');
+            this.createCountdown();
             this.endpoint = 'cmd';
             this.showIntro().then(this.init.bind(this));
         }
@@ -193,7 +193,7 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
                 this.out.sysWrite('Chronal adjustment confirmed as local temporal co-ordinates 2016-10-29 13:00, awaiting orbital insertion.');
 
                 this.out.disable();
-                disableInput();
+                // disableInput();
             }
         }, {
             key: 'disable',
@@ -238,28 +238,16 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
         }, {
             key: 'createCountdown',
             value: function createCountdown(endDate) {
-                var countdown = Tock({
-                    countdown: true,
-                    interval: 1000,
-                    callback: function callback() {
-                        document.getElementById('timerOut').innerHTML = countdown.lap() + ' milliseconds';
-                        if (countdown.lap() <= 0) {
-                            countdown.stop();
-                            var c = document.querySelector('#page main');
-                            c.innerHTML = '';
-                            setTimeout(() => {
-                                c.innerHTML = '<p>ORBITAL TRACK ESTABLISHED</p>';
-                            }, 1000);
-                            setTimeout(() => {
-                                c.innerHTML = '<p>ORBITAL TRACK ESTABLISHED<br>INSERTION IMMINENT</p>';
-                            }, 2000);
-                            setTimeout(() => {
-                                c.innerHTML = '<p>ORBITAL TRACK ESTABLISHED<br>INSERTION IMMINENT</p><p>Stand by...</p>';
-                            }, 3000);
-                        }
-                    }
-                });
-                countdown.start(countdown.timeToMS(endDate));
+                var eventTime = moment("2016-10-29T12:00:00Z");
+                var si = setInterval(function(){
+                  var msToInsertion = moment.duration(eventTime - Date.now()).asMilliseconds();
+                  if (msToInsertion <= 0) {
+                    clearInterval(si);
+                    insert();
+                    return;
+                  }
+                  document.getElementById('timerOut').innerHTML = msToInsertion + ' milliseconds';
+                }, 1000);
             }
         }]);
 
@@ -268,3 +256,17 @@ require(['vendor/telegraph', 'vendor/tock'], function (telegraph, Tock) {
 
     var term = new Console();
 });
+
+function insert() {
+    var c = document.querySelector('#page main');
+    c.innerHTML = '';
+    setTimeout(() => {
+        c.innerHTML = '<p>ORBITAL TRACK ESTABLISHED</p>';
+    }, 1000);
+    setTimeout(() => {
+        c.innerHTML = '<p>ORBITAL TRACK ESTABLISHED<br>INSERTION IMMINENT</p>';
+    }, 2000);
+    setTimeout(() => {
+        c.innerHTML = '<p>ORBITAL TRACK ESTABLISHED<br>INSERTION IMMINENT</p><p>Stand by...</p>';
+    }, 3000);
+}
