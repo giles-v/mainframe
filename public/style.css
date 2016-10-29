@@ -124,15 +124,22 @@ form#cmd {
   background: #f00;
   color: #000;
 }
+#out em.stasis {
+  background: #7b7bea;
+  color: #000;
+}
+#out em.unknown {
+  color: #f00;
+}
 
 .bio {
   display: inline-block;
 }
 .bio-image {
-  max-width: 200px;
-  max-height: 150px;
-  float: left;
-  margin: 0 1em 0 0;
+  max-width: 300px;
+  max-height: 300px;
+  display: block;
+  margin: 0 0 1em;
 }
 
 @keyframes blink {

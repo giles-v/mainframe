@@ -158,7 +158,7 @@ class TerminalServer {
                 session.currentApp.server = this;
                 session.currentApp.begin();
 
-                if (session.currentApp.isChat()) {
+                if (session.currentApp && session.currentApp.isChat()) {
                     session.currentApp.server = this;
                     this.appBroadcast(session.currentApp.constructor.name, session.user.displayName + ' has joined.');
                 }
