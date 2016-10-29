@@ -1,10 +1,22 @@
 {
-	"mike": {
-		"password": "mike",
-		"displayName": "Michael"
+	"Mike": {
+		"password": "kill1tech",
+		"displayName": "Commander PsiTech"
 	},
 	"adam": {
-		"password": "adam",
-		"displayName": "Telic"
+		"password": "exigency",
+		"displayName": "AI:Codec"
+	}
+	"andrew": {
+		"password": "gleeful",
+		"displayName": "AI:Blinowitz"
+	}
+	"system": {
+		"password": "nexus",
+		"displayName": "SysNex"
+	}
+	"nereid": {
+		"password": "neptune",
+		"displayName": "AI:Nereid"
 	}
 }

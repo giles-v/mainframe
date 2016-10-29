@@ -1,14 +1,97 @@
 [
 	{
-		"name": "Hrothgar Rock",
-		"role": "Pilot",
+		Linshi.jpg
+		"name": "Linshi",
+		"role": "Xenocultural Communications Officer",
 		"status": "Missing",
-		"bio": "Hrothgar's attention to detail-oriented action plans has earned him many accolades among his peers. He approaches problems with a top-down waterfall management style and has a proven track record of delivering cost savings.\n\nHrothgar joined the academy in A.D. 3188 following graduation at Swansea Space School."
+		"bio": "Probably human. Initially encountered by Commander PsiTech during a diplomatic mission to Tancha IV. Linshi was serving as a trans-species, full spectrum interpreter for the Mercantile Sphere (MS) while they attempted to renegotiate the terms of their trade partnership. As the discussions progressed Linshi realised that Commander PsiTech, hired as mercenary bodyguard to the First Tanchan Prelate, was being wilfully misguided by his assigned translator, with the probable intent of providing a casus beli for the MS.\n\nLinshi broke her neutrality, threatening her reputation as a trusted intermediary, and instructed the Commanmder in secret in the proper forms of address and customary signs of respect. The Nexus was able to withdraw from its contract without incident merely days before the MS destroyed the Tanchan orbital shipyards and laid seige to the planet. Linshi has remained with the Nexus ever since, steering Commander PsiTech through the nuances of strange and alien social interactions>"
+	
 	},
 	{
-		"name": "Aelfred the Overt",
-		"role": "Jester",
-  		"status": "deceased",
-  		"bio": "Aelfred has been the ship's jester since the first launch, stoically regaling the crew during battles both military and emotional. His unique ability to lift afflicted spirits by a judicial application of psilocybin and gratuitous physical contact is a key part of the ship's incredible victory record.\n\nAelfred was sadly killed during a routine maneuvre when he tripped entering the transporter and was ripped into two segments."
+		Subject.jpg
+		"name": "Subject",
+		"role": "Core Drive Engineer",
+  		"status": "Missing",
+  		"bio": "Ex mercenary (conscripted). Served with the Scorched Void 6th fleet after being press ganged when they captured the freighter he crewed on. Unwillingly took part in several of the massacres for which the Scorched Void were known for, including overloading his ship's core drive to generate a plasma torch capable of igniting a planet's atmosphere. Indirectly responsible for the deaths of 17 billion colonists the fleet laid waste to the Hecarine system.\n\nAfter the Spiral Coallition defeated the 6th fleet's at the battle of Idiran, in which Commander PsiTech fought as a rogue element, the Subject's escape pod was picked up by the Nexus and he willingly joined the crew. His steadfast loyalty is born partly out of respect and partly out of fear that the Scorched Void will reform and attempt to re-conscript him. PsiTech has assured him he will not stand alone should that day come."
 	}
+	{
+		Hannibal.jpg
+		"name": "Hannibal Hellmuerto",
+		"role": "Deputy Assistant Human Waste Disposal Officer",
+  		"status": "In stasis",
+  		"bio": "Ran away from Zaphod the Magnificent's Pan-Galactic Circus of Terran Terror to join the Nexus."
+	}
+	{
+		Anastasia.jpg	
+		"name": "Anastasia IV",
+		"role": "Deputy Assistant Human Waste Disposal Officer",
+  		"status": "In stasis",
+  		"bio": "Ran away from Zaphod the Magnificent's Pan-Galactic Circus of Terran Terror to join the Nexus."
+	}
+	{
+		iota_2.jpg
+		"name": "iota",
+		"role": "Sysadmin/Hacker",
+  		"status": "Unknown",
+  		"bio": "A homeless punk hacker who was picked up in a second hand tech/junk market out on the edge of the galactic disk. No-one remembers exactly how iota came to join the crew, as the away team who went down to the colony that day ended up in a drinking contest with an android that not only brewed his own perfectly distilled, neurally destructive moonshine, but was fitted with a high-end artificial liver implant. By the time they stumbled back aboard the Nexus iota had granted herself root access to the Nexus Mainframe and was casually tinkering with the gestural interface. The first person to question her presence soon found that the only way to unlock their crew quarters was to seductively undress in the corridor. Since then iota has proved herself a valuable team member and a useful adjunct to AI Nereid's capabilities, especially when hacker skills are needed for an off-ship mission."
+	}
+	{
+		ZuArt.png
+		"name": "ZuArt the Near-Sighted Seer",
+		"role": "Ship's Psychic",
+  		"status": "In stasis",
+  		"bio": "AKA Teichoscopia, Cassandra, or The Unreliable\n\nThe gift of second sight is hereditary, being passed down from mother to daughter.  Rodek the Far-Sighted-Seer died giving birth to her only child, a healthy bouncing boy.  Lacking maternal guidance and gender predisposition, ZuArt was never expected to develop any psychic ability.  Early manifestations of his gift were misinterpreted as spying and dropping of eaves (from which he gained the nickname Techo).  After being accused of being a peeping Tom, ZuArt was locked away in isolation.  He was later released without conditions, after he accurately predicted the demise of a village elder in a freak accident involving the birthing of a Heilan Heffer, late at night, by candlelight.  It transpired that the cow was a phantom birth, and three months of pent up gas were released instead./n/nZuArt’s greatest prediction was the destruction of his own planet.  He foresaw that an extraterrestrial object would hurtle into the planet, sending it onto a direct collision course with the planet’s sun. Ships were duly constructed (have you witnessed the Ethellian project methodology?), lists drawn of the great & good to carry on the genetic seed and, on the day that Hillary’s comet appeared on the horizon, ships were boarded, and the fleet departed.\n\nOn witnessing the comet passing Ethel with a wide berth the elders cursed ZuArt furiously. The fleet returned, and the ships were unduly decommissioned (the Ethellians revel in deconstruction). ZuArt was banished to orbit the planet for a year and a day, to think upon the disruption that he had caused. On the day of his scheduled return home, an interstellar cruiser, the largest of its kind, was hijacked by joyriders. They had cracked the ships password ‘Picard123', hacked the AI, put the cruiser into manual, and made off at maximum speed.  The cruiser’s AI fought back valiantly, locking the joyriders out, but was unable to override the manual controls.  Nothing could be done to stop the cruiser colliding with Ethel, the planet was sent into a spin, and in turn Ethel collided with its sun.  The joyriders escaped in a shuttle, and are still at large.  ZuArt was the only member of his race to survive."
+	}
+	{
+		Xan.jpg
+		"name": "Dr Xan Talon",
+		"role": "Xenobiologist",
+  		"status": "In stasis",
+  		"bio": "Xan was born on the planet Ascarth, which is largely a forest planet with minimal technological capability.  She generally has more affinity for creatures than people, and is happiest when getting to know an individual creature or a new species.  Her curiosity about new lifeforms often landed her in trouble with her people, and after getting caught trespassing one too many times tracking elusive winged reptiles, she hitched a ride with a passing trader and left her homeworld.  At least that’s what she tells people - she tends to skip the part about some rather unwise experiments involving animal hybrids that didn’t quite go to plan.\n\nWhile she misses the forests of Ascarth, she is happy to be exploring the universe as there are so many creatures out there to discover.  Early in her travels she decided to formalise her knowledge of Xenobiology, obtained a doctorate, and met her lover India Kaleri. Xan now works on the Nexus, studying (and sometimes experimenting on) the creatures they encounter."
+	}
+	{
+		India_3.jpg
+		"name": "India Kaleri",
+		"role": "Medic/Experimental Pharmacologist",
+  		"status": "In stasis",
+  		"bio": "Rumoured to be half human, half alien. Status uncertain due to reluctance to talk about her life or her past. She was training to be a veterinarian when she caught a rare virus and never completed her studies. Instead she turned her talents to operating on humanoids. A lack of training, combined with never having actually taken the Hippocratic Oath, has left her free to willingly medicate herself and others whenever the opportunity presents itself. She is a gifted medic however, if a little unscrupulous. She met Xan Talon while studying and they quickly hit it off, shortly becoming lovers, and have been inseparable since.\n\nWhile pursuing a bounty hunting contract on a space station in the Demari Nebula, PsiTech took a toxin shard from a Leanthine needler to the guy. India came to the rescue, knocking out the assassin with a little concoction of her which she'd been dying to field test. India and Xan were invited to join the Nexus team, and India has made herself useful on many occasions patching up crew members after violent encounters, or overseeing recreational bouts of pharmaceutical experimentation."
+	}
+	{
+		Aos.jpg
+		"name": "Aos",
+		"role": "Operations Officer",
+  		"status": "Missing",
+  		"bio": "Many cycles ago the AI Nereid detected a transmission from Sentar, a dead world, deep in the grip of a crushing ice age. The signal was broadcast in the clear, without encryption or interface protocols, and contained only beautiful music, sung to the stars. PsiTech ordered an immediate change of course to investigate and found a small colony living below the frozen surface. Born during the long years of the ice age, Aos had known only darkness and privation. Her broadcasts were a cry for change by any means; even destruction was better than the lifeless tedium on Sentar. Impressed by both her ability to organise habitation under such conditions, PsiTech invited Aos to join the Nexus as Operations Officer, trading her practical management skills for a limitless view of the universe by his side."
+	}
+	{
+		"name": "Virus",
+		"role": "Fleet Captain, Multiverse Defence Drone Squadron",
+  		"status": "Unknown",
+  		"bio": "While not formally part of the crew Fleet Captain Virus has fought many battles by the Commander's side. It has been some years since Virus has flown missions in this branch of reality but rumours of a berserker incursion, of worlds going dark and drifting hulks found in the emptiness of the void, have begun to surface. If they prove to be true then Virus will surely be only a warp jump behind. His tactical acumen has saved many worlds, and his devilish good looks have ensured he has done more than his share to aid repopulation efforts."
+	}
+	{
+		"name": "Daniela [PLACEHOLDER]",
+		"role": "Logistics Officer",
+  		"status": "Missing",
+  		"bio": "[PLACEHOLDER]"
+	}
+	{
+		"name": "Emilia [PLACEHOLDER]",
+		"role": "[PLACEHOLDER]",
+  		"status": "In Stasis",
+  		"bio": "[PLACEHOLDER]"
+	}
+	{
+		"name": "Pavel [PLACEHOLDER]",
+		"role": "[PLACEHOLDER]",
+  		"status": "In Stasis",
+  		"bio": "[PLACEHOLDER]"
+	}
+	{
+		"name": "Rachel [PLACEHOLDER]",
+		"role": "[PLACEHOLDER]",
+  		"status": "In Stasis",
+  		"bio": "[PLACEHOLDER]"
+	}
+	
 ]
